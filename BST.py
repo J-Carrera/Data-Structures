@@ -11,39 +11,66 @@ class BinarySearchTree:
 
     ################ Task 1 ################
     def insert(self, data):
-        pass
+        if self.root is None:
+            self.root = BSTNode(data)
+        else:
+            self._add_child(data, self.root)
         #use helper _add_child method to add children to existing parent
 
 
     def _add_child(self, data, p_node):
         if data == p_node.data: #duplicate items cannot be added
             return
+        if data < p_node.data:
+            if p_node.left:
+                self._add_child(data, p_node.left)
+            else:
+                p_node.left = BSTNode(data, p_node)
+        else:
+            if p_node.right:
+                self._add_child(data, p_node.right)
+            else:
+                p_node.right = BSTNode(data, p_node)
+
 
         #implement logic to recursively add a node at appropriate location
-        pass
+       
 
     def get_max(self):
+        if self.root:
+            return self._get_right_child(self.root)
+        else:
+            return None
         #retrieve the appropriate node with the help of
         # helper method _get_right_child
-        pass
+        
 
     def _get_right_child(self, node):
         #helper method to retrieve right node recursively
-        pass
+        if node.right:
+            return self._get_right_child(node.right)
+        return node.data
 
     def get_min(self):
         #retrieve the appropriate node with the help of
         # helper method _get_left_child
-        pass
+        if self.root:
+            return self._get_left_child(self.root)
+        else:
+            return None
 
     def _get_left_child(self, node):
         #helper method to retrieve left node recursively
-        pass
+        if node.left:
+            return self._get_left_child(node.left)
+        return node.data
+    
+    def _get_predecessor(self, node):
+        if node.right:
+            return self.get_predecessor(node.right)
 
-    def traverse_in_order(self, node, traversed_data):
-        #traverse the tree in in-order fashion and keep
-        #adding the elements in the traversed_data list
-        pass
+        return node
+
 
     def delete(self, data):
         #starting from root node, pass the data and node
@@ -58,24 +85,65 @@ class BinarySearchTree:
 
         #For deleting root node with two children, use the
         #helper method _get_predecessor to get the predecessor
-        pass
+        if node == None:
+            return
+        if data < node.data:
+            self._remove_node(data, node.left)
+        elif data > node.data:
+            self._remove_node(data, node.right)
+        else:
+            if node.left == None and node.right == None:
+                j = node.parent
+                if j != None:
+                    if j.right == node:
+                        j.right = None
+                    if j.left == node:
+                        j.left = None
+                else:
+                    self.root = None
 
-    def _get_predecessor(self, node):
-        if node.right:
-            return self.get_predecessor(node.right)
+                del node
+            elif node.left != None and node.right == None:
+                j = node.parent
+                if j != None:
+                    if j.right == node:
+                        j.right = node.right
+                    if j.left == node:
+                        j.left = node.right
+                else:
+                    self.root = node.right
+                node.right.parent = j
+                del node
+            else:
+                z = self._get_predecessor(node.left)
+                z.data, node.data = node.data, z.data
+                self._remove_node(data, z)
 
-        return node
+
+    
+    def traverse_in_order(self, node, traversed_data):
+        #traverse the tree in in-order fashion and keep
+        #adding the elements in the traversed_data list
+        if node != None:
+            self.traverse_in_order(node.left, traversed_data)
+            traversed_data.append(node.data)
+            self.traverse_in_order(node.right, traversed_data)
 
     ################ Task 2 ################
     def traverse_pre_order(self, node, traversed_data):
         #traverse the tree in pre-order fashion and keep
         #adding the elements in the traversed_data list
-        pass
-
+        if node != None:
+            traversed_data.append(node.data)
+            self.traverse_pre_order(node.left, traversed_data)
+            self.traverse_pre_order(node.right, traversed_data)
     def traverse_post_order(self, node, traversed_data):
         #traverse the tree in post-order fashion and keep
         #adding the elements in the traversed_data list
-        pass
+        if node != None:
+            self.traverse_post_order(node.left, traversed_data)
+            self.traverse_post_order(node.right, traversed_data)
+            traversed_data.append(node.data)
 
 
 
